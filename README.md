@@ -14,6 +14,7 @@ The Kubernetes Port-Check application is designed to quickly verify the accessib
 3.  **Versatile Checking**: Can conduct checks via TCP, UDP, or Ping.
 4.  **Automatic Client Registration**: Every client automatically registers on the server and sends a health status. For each active client, the server formulates a task when a check is initiated. Subsequently, the client returns the outcome to the server.
 5.  **Web Interface Alternatives**: Instead of the web interface, users can send POST requests for resource checks and retrieve results in JSON format.
+![Example Image](images/example.jpg)
 
 ### **Usage**
 
