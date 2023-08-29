@@ -1,0 +1,44 @@
+kind: DaemonSet
+apiVersion: apps/v1
+metadata:
+  name: check-port-client
+  namespace: check
+  labels:
+    k8s-app: check-port-client
+spec:
+  selector:
+    matchLabels:
+      k8s-app: check-port-client
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        k8s-app: check-port-client
+    spec:
+      nodeSelector:
+        kubernetes.io/os: linux
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      hostNetwork: false
+      terminationGracePeriodSeconds: 30
+      securityContext: {}
+      containers:
+        - resources:
+            requests:
+              cpu: 50m
+              memory: 50Mi
+            limits:
+              cpu: 200m
+              memory: 200Mi
+          terminationMessagePath: /dev/termination-log
+          name: check-port-client
+          imagePullPolicy: IfNotPresent
+          terminationMessagePolicy: File
+          image: 'steemax/net-check-client:v1.0.1'
+      dnsPolicy: ClusterFirst
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 0
+  revisionHistoryLimit: 10
