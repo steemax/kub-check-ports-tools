@@ -1,0 +1,27 @@
+{{- if and .Values.checkPortClient.enabled (eq .Values.checkPortClient.Deployment.type "Deployment") }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.checkPortClient.Deployment.name | default (printf "%s-client" (include "check-port.fullname" .)) }}
+  namespace: check
+spec:
+  replicas: {{ .Values.checkPortClient.replicas }}
+  selector:
+    matchLabels:
+      app: check-port-client
+  template:
+    metadata:
+      labels:
+        app: check-port-client
+    spec:
+      containers:
+      - name: check-port-client
+        image: {{ .Values.checkPortClient.Deployment.image.repository }}:{{ .Values.checkPortClient.Deployment.image.tag | default .Chart.AppVersion }}
+        ports:
+        - containerPort: 8080
+        resources: {{- toYaml .Values.checkPortClient.Deployment.resources | nindent 10 }}
+        {{- with .Values.checkPortClient.tolerations }}
+        tolerations:
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
+{{- end -}}

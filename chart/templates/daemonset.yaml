@@ -1,0 +1,33 @@
+{{- if and .Values.checkPortClient.enabled (eq .Values.checkPortClient.Deployment.type "DaemonSet") }}
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ include "check-port.fullname" . }}-client
+  namespace: check
+  labels:
+    k8s-app: check-port-client
+  {{- include "check-port.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      k8s-app: check-port-client
+    {{- include "check-port.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        k8s-app: check-port-client
+      {{- include "check-port.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - name: check-port-client
+        image: {{ .Values.checkPortClient.Deployment.image.repository }}:{{ .Values.checkPortClient.Deployment.image.tag | default .Chart.AppVersion }}
+        resources: {{- toYaml .Values.checkPortClient.Deployment.resources | nindent 10 }}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      nodeSelector: {{- toYaml .Values.checkPortClient.nodeSelector | nindent 8 }}
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+{{- end -}}
