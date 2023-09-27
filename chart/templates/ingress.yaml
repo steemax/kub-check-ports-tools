@@ -1,0 +1,16 @@
+{{- if and .Values.checkPortServer.Ingress.enabled .Values.checkPortServer.enabled -}}
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ .Values.checkPortServer.Deployment.name | default (printf "%s-server" (include "check-port.fullname" .)) }}
+spec:
+  entryPoints: {{ .Values.checkPortServer.Ingress.entrypoint }}
+  routes:
+    - match: {{ .Values.checkPortServer.Ingress.hostname }}
+      kind: Rule
+      services:
+        - name: {{ .Values.checkPortServer.Deployment.name | default (printf "%s-server" (include "check-port.fullname" .)) }}
+          kind: Service
+          port: {{ index .Values.checkPortServer.ports 0 "port" }}
+          scheme: {{ .Values.checkPortServer.Ingress.scheme }}
+{{- end }}

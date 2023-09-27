@@ -1,0 +1,26 @@
+{{- if .Values.checkPortServer.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.checkPortServer.Deployment.name | default (printf "%s-server" (include "check-port.fullname" .)) }}
+spec:
+  replicas: {{ .Values.checkPortServer.replicas }}
+  selector:
+    matchLabels:
+      app: check-port
+  template:
+    metadata:
+      labels:
+        app: check-port
+    spec:
+      containers:
+      - name: check-port-server
+        image: {{ .Values.checkPortServer.Deployment.image.repository }}:{{ .Values.checkPortServer.Deployment.image.tag | default .Chart.AppVersion }}
+        ports:
+        - containerPort: 8080
+        resources: {{- toYaml .Values.checkPortServer.Deployment.resources | nindent 10 }}
+        {{- with .Values.checkPortClient.tolerations }}
+        tolerations:
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
+{{- end -}}

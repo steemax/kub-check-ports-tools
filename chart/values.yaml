@@ -1,0 +1,61 @@
+### Server configuration
+checkPortServer:
+  enabled: true
+  Deployment:
+    name: {}
+    image:
+      repository: steemax/net-check-server
+      tag: v1.0.1
+    resources:
+      limits:
+        cpu: 200m
+        memory: 200Mi
+      requests:
+        cpu: 50m
+        memory: 50Mi
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 8080
+  replicas: 1
+  type: ClusterIP
+
+  Ingress:
+    enabled: true
+    name: {}
+    hostname: {}
+    ### Maybe websecure, grpc, web
+    entrypoint: websecure
+    ### Maybe http, https or h2c for grpc
+    scheme: https
+
+#  tolerations:
+#  - key: node-role.kubernetes.io/master
+#    effect: NoSchedule
+
+### Client configuration
+checkPortClient:
+  enabled: true
+  Deployment:
+    ### Maybe Deployment or DaemonSet
+    type: DaemonSet
+    replicas: 3
+    name: {}
+    image:
+      repository: steemax/net-check-client
+      tag: v1.0.2
+    imagePullPolicy: IfNotPresent
+    resources:
+      limits:
+        cpu: 200m
+        memory: 200Mi
+      requests:
+        cpu: 50m
+        memory: 50Mi
+  nodeSelector:
+    kubernetes.io/os: linux
+  replicas: 1
+
+  tolerations:
+  - key: node-role.kubernetes.io/master
+    effect: NoSchedule
